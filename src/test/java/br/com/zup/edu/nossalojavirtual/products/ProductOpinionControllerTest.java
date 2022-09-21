@@ -246,14 +246,19 @@ class ProductOpinionControllerTest {
                 .content(payload)
                 .contentType(MediaType.APPLICATION_JSON);
 
-        Executable executable = () -> mockMvc.perform(request);
+        Exception resolvedException = mockMvc.perform(request)
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andReturn()
+                .getResolvedException();
 
-        NestedServletException nestedServletException = assertThrows(
-                NestedServletException.class,
-                executable
-        );
+        MethodArgumentNotValidException exception = (MethodArgumentNotValidException) resolvedException;
 
-        assertEquals("The given id must not be null!", nestedServletException.getCause().getCause().getMessage());
+        assertNotNull(exception);
+        List<String> errorMessages = exception.getBindingResult().getFieldErrors().stream().map(ExceptionUtil::getFieldAndDefaultErrorMessage).toList();
+
+        MatcherAssert.assertThat(errorMessages, containsInAnyOrder(
+                "productId must not be null"
+        ));
     }
 
     @Test
