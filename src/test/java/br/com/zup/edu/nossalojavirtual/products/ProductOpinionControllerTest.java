@@ -12,6 +12,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -24,6 +25,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.util.NestedServletException;
 
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
@@ -63,6 +65,9 @@ class ProductOpinionControllerTest {
 
     @BeforeEach
     void setUp() {
+
+        this.clearDB();
+
         Photo p1 = new Photo("https://cf.shopee.com.br/file/be1b6889f9b5fdea9588a355d97427c9/uploadedLink1");
         Photo p2 = new Photo("https://cf.shopee.com.br/file/be1b6889f9b5fdea9588a355d97427c9/uploadedLink2");
 
@@ -96,10 +101,7 @@ class ProductOpinionControllerTest {
 
     @AfterEach
     void tearDown() {
-        opinionRepository.deleteAll();
-        productRepository.deleteAll();
-        categoryRepository.deleteAll();
-        userRepository.deleteAll();
+        this.clearDB();
     }
 
     @Test
@@ -227,8 +229,36 @@ class ProductOpinionControllerTest {
     }
 
     @Test
-    @DisplayName("Should not create a new opinion to a product without token")
+    @DisplayName("Should not create a new opinion to a product in case of null product id")
     void test5() throws Exception {
+
+        NewOpinionRequest newOpinionRequest =
+                new NewOpinionRequest(5, "Recomendo!", "Comprei e gostei bastante", null);
+
+        String payload = mapper.writeValueAsString(newOpinionRequest);
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(apiUrl)
+                .with(jwt()
+                        .jwt(jwt -> {
+                            jwt.claim("email", user.getUsername());
+                        })
+                        .authorities(new SimpleGrantedAuthority("SCOPE_lojavirtual:write")))
+                .content(payload)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        Executable executable = () -> mockMvc.perform(request);
+
+        NestedServletException nestedServletException = assertThrows(
+                NestedServletException.class,
+                executable
+        );
+
+        assertEquals("The given id must not be null!", nestedServletException.getCause().getCause().getMessage());
+    }
+
+    @Test
+    @DisplayName("Should not create a new opinion to a product without token")
+    void test6() throws Exception {
 
         NewOpinionRequest newOpinionRequest =
                 new NewOpinionRequest(5, "Recomendo!", "Comprei e gostei bastante", product.getId());
@@ -245,7 +275,7 @@ class ProductOpinionControllerTest {
 
     @Test
     @DisplayName("Should not create a new opinion to a product without an user")
-    void test6() throws Exception {
+    void test7() throws Exception {
 
         NewOpinionRequest newOpinionRequest =
                 new NewOpinionRequest(5, "Recomendo!", "Comprei e gostei bastante", product.getId());
@@ -263,7 +293,7 @@ class ProductOpinionControllerTest {
 
     @Test
     @DisplayName("Should not create a new opinion to a product with a invalid scope")
-    void test7() throws Exception {
+    void test8() throws Exception {
 
         NewOpinionRequest newOpinionRequest =
                 new NewOpinionRequest(5, "Recomendo!", "Comprei e gostei bastante", product.getId());
@@ -283,4 +313,11 @@ class ProductOpinionControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isForbidden());
     }
 
+
+    private void clearDB() {
+        opinionRepository.deleteAll();
+        productRepository.deleteAll();
+        categoryRepository.deleteAll();
+        userRepository.deleteAll();
+    }
 }

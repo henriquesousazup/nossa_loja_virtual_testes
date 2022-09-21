@@ -12,6 +12,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,6 +25,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.util.NestedServletException;
 
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
@@ -31,8 +33,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 
 @SpringBootTest
@@ -67,6 +68,9 @@ class ProductControllerTest {
 
     @BeforeEach
     void setUp() {
+
+        this.clearDB();
+
         user = new User("henrique.desousa@zup.com.br", Password.encode("123456"));
         userRepository.save(user);
 
@@ -87,9 +91,7 @@ class ProductControllerTest {
 
     @AfterEach
     void tearDown() {
-        productRepository.deleteAll();
-        categoryRepository.deleteAll();
-        userRepository.deleteAll();
+        this.clearDB();
     }
 
     @Test
@@ -196,8 +198,38 @@ class ProductControllerTest {
     }
 
     @Test
-    @DisplayName("Should not create a product without an user")
+    @DisplayName("Should not create a product with category id is null")
     void test4() throws Exception {
+
+        NewProductRequest newProductRequest = new NewProductRequest(
+                "Tijorola", new BigDecimal("150.00"),
+                5, photos, newCharacteristicRequest,
+                "Muito bom", null);
+
+        String payload = mapper.writeValueAsString(newProductRequest);
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(apiUrl).with(jwt()
+                        .jwt(jwt -> {
+                            jwt.claim("email", user.getUsername());
+                        })
+                        .authorities(new SimpleGrantedAuthority("SCOPE_lojavirtual:write")))
+                .content(payload)
+                .contentType(MediaType.APPLICATION_JSON);
+
+
+        Executable executable = () -> mockMvc.perform(request);
+
+        NestedServletException nestedServletException = assertThrows(
+                NestedServletException.class,
+                executable
+        );
+
+        assertEquals("The given id must not be null!", nestedServletException.getCause().getCause().getMessage());
+    }
+
+    @Test
+    @DisplayName("Should not create a product without an user")
+    void test5() throws Exception {
 
         NewProductRequest newProductRequest = new NewProductRequest(
                 "Tijorola", new BigDecimal("150.00"),
@@ -222,7 +254,7 @@ class ProductControllerTest {
 
     @Test
     @DisplayName("Should not create a new product without token")
-    void test5() throws Exception {
+    void test6() throws Exception {
 
         NewProductRequest newProductRequest = new NewProductRequest(
                 "Tijorola", new BigDecimal("150.00"),
@@ -241,7 +273,7 @@ class ProductControllerTest {
 
     @Test
     @DisplayName("Should not create a new product without a valid scope")
-    void test6() throws Exception {
+    void test7() throws Exception {
 
         NewProductRequest newProductRequest = new NewProductRequest(
                 "Tijorola", new BigDecimal("150.00"),
@@ -263,4 +295,9 @@ class ProductControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isForbidden());
     }
 
+    private void clearDB(){
+        productRepository.deleteAll();
+        categoryRepository.deleteAll();
+        userRepository.deleteAll();
+    }
 }

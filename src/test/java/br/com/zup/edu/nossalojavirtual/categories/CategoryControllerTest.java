@@ -3,6 +3,7 @@ package br.com.zup.edu.nossalojavirtual.categories;
 import br.com.zup.edu.nossalojavirtual.util.ExceptionUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,12 @@ class CategoryControllerTest {
 
     @AfterEach
     void tearDown() {
-        categoryRepository.deleteAll();
+        this.clearDB();
+    }
+
+    @BeforeEach
+    void setUp() {
+        this.clearDB();
     }
 
     @Test
@@ -186,7 +192,7 @@ class CategoryControllerTest {
         assertNotNull(exception);
         String errorMessage = exception.getBindingResult().getFieldErrors().get(0).getDefaultMessage();
 
-        assertEquals("name is already registered", errorMessage);
+        assertEquals("this category is already registered", errorMessage);
     }
 
     @Test
@@ -221,4 +227,7 @@ class CategoryControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isForbidden());
     }
 
+    private void clearDB() {
+        categoryRepository.deleteAll();
+    }
 }

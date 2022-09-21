@@ -68,8 +68,15 @@ class PaymentGatewayReturnControllerTest {
     private String apiUrl = "/api/purchases/confirm-payment";
     private User user;
 
+    @AfterEach
+    void tearDown() {
+        this.clearDB();
+    }
+
     @BeforeEach
     void setUp() {
+
+        this.clearDB();
 
         Photo p1 = new Photo("https://cf.shopee.com.br/file/be1b6889f9b5fdea9588a355d97427c9/uploadedLink1");
         Photo p2 = new Photo("https://cf.shopee.com.br/file/be1b6889f9b5fdea9588a355d97427c9/uploadedLink2");
@@ -104,14 +111,6 @@ class PaymentGatewayReturnControllerTest {
         NewPurchaseRequest newPurchase = new NewPurchaseRequest(product.getId(), 2, PaymentGateway.PAYPAL);
         purchase = product.reserveQuantityFor(newPurchase, user).get();
         purchaseRepository.save(purchase);
-    }
-
-    @AfterEach
-    void tearDown() {
-        purchaseRepository.deleteAll();
-        productRepository.deleteAll();
-        categoryRepository.deleteAll();
-        userRepository.deleteAll();
     }
 
     @Test
@@ -257,4 +256,10 @@ class PaymentGatewayReturnControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isForbidden());
     }
 
+    private void clearDB() {
+        purchaseRepository.deleteAll();
+        productRepository.deleteAll();
+        categoryRepository.deleteAll();
+        userRepository.deleteAll();
+    }
 }

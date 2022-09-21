@@ -64,9 +64,16 @@ class PurchaseControllerTest {
     private String apiUrl = "/api/purchase";
     private User user;
 
+    @AfterEach
+    void tearDown() {
+        this.clearDB();
+    }
 
     @BeforeEach
     void setUp() {
+
+        this.clearDB();
+
         Photo p1 = new Photo("https://cf.shopee.com.br/file/be1b6889f9b5fdea9588a355d97427c9/uploadedLink1");
         Photo p2 = new Photo("https://cf.shopee.com.br/file/be1b6889f9b5fdea9588a355d97427c9/uploadedLink2");
 
@@ -96,14 +103,6 @@ class PurchaseControllerTest {
 
         product = new Product(preProduct, uploadedPhotos, productCharacteristics);
         productRepository.save(product);
-    }
-
-    @AfterEach
-    void tearDown() {
-        purchaseRepository.deleteAll();
-        productRepository.deleteAll();
-        categoryRepository.deleteAll();
-        userRepository.deleteAll();
     }
 
     @Test
@@ -301,6 +300,13 @@ class PurchaseControllerTest {
 
         mockMvc.perform(request)
                 .andExpect(MockMvcResultMatchers.status().isForbidden());
+    }
+
+    private void clearDB() {
+        purchaseRepository.deleteAll();
+        productRepository.deleteAll();
+        categoryRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
 }

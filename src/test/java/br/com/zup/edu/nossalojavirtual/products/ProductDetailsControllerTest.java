@@ -67,6 +67,9 @@ class ProductDetailsControllerTest {
 
     @BeforeEach
     void setUp() {
+
+        this.clearDB();
+
         Photo p1 = new Photo("https://cf.shopee.com.br/file/be1b6889f9b5fdea9588a355d97427c9/uploadedLink1");
         Photo p2 = new Photo("https://cf.shopee.com.br/file/be1b6889f9b5fdea9588a355d97427c9/uploadedLink2");
 
@@ -106,11 +109,7 @@ class ProductDetailsControllerTest {
 
     @AfterEach
     void tearDown() {
-        questionRepository.deleteAll();
-        opinionRepository.deleteAll();
-        productRepository.deleteAll();
-        categoryRepository.deleteAll();
-        userRepository.deleteAll();
+        this.clearDB();
     }
 
     @Test
@@ -158,4 +157,11 @@ class ProductDetailsControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
+    private void clearDB() {
+        questionRepository.deleteAll();
+        opinionRepository.deleteAll();
+        productRepository.deleteAll();
+        categoryRepository.deleteAll();
+        userRepository.deleteAll();
+    }
 }

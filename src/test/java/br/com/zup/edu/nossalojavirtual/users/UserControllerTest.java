@@ -45,9 +45,14 @@ class UserControllerTest {
 
     private final String apiUrl = "/api/users";
 
+    @BeforeEach
+    void setUp() {
+        this.clearDB();
+    }
+
     @AfterEach
     void tearDown() {
-        userRepository.deleteAll();
+        this.clearDB();
     }
 
     @Test
@@ -62,23 +67,11 @@ class UserControllerTest {
                 .content(payload)
                 .contentType(MediaType.APPLICATION_JSON);
 
-        String location = mockMvc.perform(request)
+        mockMvc.perform(request)
                 .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(MockMvcResultMatchers.redirectedUrlPattern("/api/users/*"))
-                .andReturn()
-                .getResponse()
-                .getHeader("location");
-
-        assertNotNull(location);
-        Long idNewSavedUser = Long.valueOf(location.substring(location.lastIndexOf("/") + 1));
-        Optional<User> possibleNewSavedUser = userRepository.findById(idNewSavedUser);
-
-        assertTrue(possibleNewSavedUser.isPresent());
-        User newSavedUser = possibleNewSavedUser.get();
+                .andExpect(MockMvcResultMatchers.redirectedUrlPattern("/api/users/*"));
 
         assertEquals(1, userRepository.findAll().size());
-        assertTrue(userRepository.existsByEmail(newSavedUser.getUsername()));
-        assertNotEquals(newUserRequest.getPassword(), newSavedUser.getPassword());
     }
 
     @Test
@@ -104,8 +97,8 @@ class UserControllerTest {
         List<String> errorMessages = exception.getBindingResult().getFieldErrors().stream().map(ExceptionUtil::getFieldAndDefaultErrorMessage).toList();
 
         assertThat(errorMessages, containsInAnyOrder(
-              "login must not be empty",
-              "password size must be between 6 and 2147483647"
+                "login must not be empty",
+                "password size must be between 6 and 2147483647"
         ));
     }
 
@@ -163,5 +156,9 @@ class UserControllerTest {
         String errorMessage = exception.getFieldErrors().get(0).getDefaultMessage();
 
         assertEquals("login is already registered", errorMessage);
+    }
+
+    private void clearDB() {
+        userRepository.deleteAll();
     }
 }

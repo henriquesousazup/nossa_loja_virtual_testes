@@ -75,6 +75,8 @@ class QuestionControllerTest {
     @BeforeEach
     void setUp() {
 
+        this.clearDB();
+
         Photo p1 = new Photo("https://cf.shopee.com.br/file/be1b6889f9b5fdea9588a355d97427c9/uploadedLink1");
         Photo p2 = new Photo("https://cf.shopee.com.br/file/be1b6889f9b5fdea9588a355d97427c9/uploadedLink2");
 
@@ -108,11 +110,7 @@ class QuestionControllerTest {
 
     @AfterEach
     void tearDown() {
-        emailRepository.deleteAll();
-        questionRepository.deleteAll();
-        productRepository.deleteAll();
-        categoryRepository.deleteAll();
-        userRepository.deleteAll();
+        this.clearDB();
     }
 
     @Test
@@ -255,6 +253,14 @@ class QuestionControllerTest {
 
         mockMvc.perform(request)
                 .andExpect(MockMvcResultMatchers.status().isForbidden());
+    }
+
+    private void clearDB() {
+        emailRepository.deleteAll();
+        questionRepository.deleteAll();
+        productRepository.deleteAll();
+        categoryRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
 }
