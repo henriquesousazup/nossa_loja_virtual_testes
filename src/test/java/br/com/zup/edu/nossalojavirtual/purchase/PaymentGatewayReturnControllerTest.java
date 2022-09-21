@@ -42,20 +42,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc(printOnlyOnFailure = false)
-@ExtendWith(MockitoExtension.class)
 class PaymentGatewayReturnControllerTest {
-
-    @Mock
-    SendPurchaseConfirmationToInvoiceSystem sendPurchaseConfirmationToInvoiceSystem;
-    @Mock
-    SendPurchaseConfirmationToSellersSystem sendPurchaseConfirmationToSellersSystem;
-    @Mock
-    SendPurchaseEmailConfirmation sendPurchaseEmailConfirmation;
-    @Mock
-    SendPurchaseFailEmail sendPurchaseFailEmail;
-
-    @SpyBean
-    PaymentGatewayReturnController paymentGatewayReturnController;
 
     @Autowired
     MockMvc mockMvc;

@@ -163,8 +163,41 @@ class ProductOpinionControllerTest {
     }
 
     @Test
-    @DisplayName("Should not create a new opinion to a product in case of invalid product id")
+    @DisplayName("Should not create a new opinion to a product in case of invalid rating range")
     void test3() throws Exception {
+
+        NewOpinionRequest newOpinionRequest =
+                new NewOpinionRequest(6, "Recomendo!", "Comprei e gostei bastante", product.getId());
+
+        String payload = mapper.writeValueAsString(newOpinionRequest);
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(apiUrl)
+                .with(jwt()
+                        .jwt(jwt -> {
+                            jwt.claim("email", user.getUsername());
+                        })
+                        .authorities(new SimpleGrantedAuthority("SCOPE_lojavirtual:write")))
+                .content(payload)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        Exception resolvedException = mockMvc.perform(request)
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andReturn()
+                .getResolvedException();
+
+        MethodArgumentNotValidException exception = (MethodArgumentNotValidException) resolvedException;
+
+        assertNotNull(exception);
+        List<String> errorMessages = exception.getBindingResult().getFieldErrors().stream().map(ExceptionUtil::getFieldAndDefaultErrorMessage).toList();
+
+        MatcherAssert.assertThat(errorMessages, containsInAnyOrder(
+                "rating must be between 1 and 5"
+        ));
+    }
+
+    @Test
+    @DisplayName("Should not create a new opinion to a product in case of invalid product id")
+    void test4() throws Exception {
 
         NewOpinionRequest newOpinionRequest =
                 new NewOpinionRequest(5, "Recomendo!", "Comprei e gostei bastante", UUID.randomUUID());
@@ -195,7 +228,7 @@ class ProductOpinionControllerTest {
 
     @Test
     @DisplayName("Should not create a new opinion to a product without token")
-    void test4() throws Exception {
+    void test5() throws Exception {
 
         NewOpinionRequest newOpinionRequest =
                 new NewOpinionRequest(5, "Recomendo!", "Comprei e gostei bastante", product.getId());
@@ -212,7 +245,7 @@ class ProductOpinionControllerTest {
 
     @Test
     @DisplayName("Should not create a new opinion to a product without an user")
-    void test5() throws Exception {
+    void test6() throws Exception {
 
         NewOpinionRequest newOpinionRequest =
                 new NewOpinionRequest(5, "Recomendo!", "Comprei e gostei bastante", product.getId());
@@ -230,7 +263,7 @@ class ProductOpinionControllerTest {
 
     @Test
     @DisplayName("Should not create a new opinion to a product with a invalid scope")
-    void test6() throws Exception {
+    void test7() throws Exception {
 
         NewOpinionRequest newOpinionRequest =
                 new NewOpinionRequest(5, "Recomendo!", "Comprei e gostei bastante", product.getId());

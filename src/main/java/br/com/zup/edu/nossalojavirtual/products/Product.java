@@ -90,6 +90,8 @@ class Product {
         requireNonNull(preProduct, "preProduct must not be null");
         notEmpty(photos, "product must have at least one photo");
         atLeastThree(characteristics, "product must have at least three characteristics");
+        greaterOrEqualToZero(preProduct.getStockQuantity(), "stock quantity must have 0 or more");
+        greaterThanZero(preProduct.getPrice(), "price must be greater than 0");
 
         this.id = preProduct.getId();
         this.name = preProduct.getName();

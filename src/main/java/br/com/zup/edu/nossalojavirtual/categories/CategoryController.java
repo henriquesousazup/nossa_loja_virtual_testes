@@ -31,11 +31,16 @@ class CategoryController {
     @InitBinder(value = { "newCategoryRequest" })
     void initBinder(WebDataBinder binder) {
 
+        binder.addValidators(new UniqueFieldValidator<>("name",
+                                                       "category.superCategory",
+                                                        NewCategoryRequest.class,
+                                                        categoryRepository::existsByName),
+                             new SuperCategoryExistsValidator(categoryRepository));
 
         binder.addValidators(new UniqueFieldValidator<>("name",
                                                        "category.name.alreadyExists",
                                                         NewCategoryRequest.class,
                                                         categoryRepository::existsByName),
-                             new SuperCategoryExistsValidator(categoryRepository));
+                             new CategoryUniqueNameValidator(categoryRepository));
     }
 }

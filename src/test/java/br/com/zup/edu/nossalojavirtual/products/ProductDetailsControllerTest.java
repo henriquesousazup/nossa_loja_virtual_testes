@@ -113,7 +113,6 @@ class ProductDetailsControllerTest {
         userRepository.deleteAll();
     }
 
-    // TODO Perguntar para o Yuri o que precisa ser testado ao detalhar produto
     @Test
     @DisplayName("Should return product details")
     void test1() throws Exception {
