@@ -28,4 +28,11 @@ class Photo {
     public String getUrl() {
         return url;
     }
+
+    @Override
+    public String toString() {
+        return "Photo{" +
+                "url='" + url + '\'' +
+                '}';
+    }
 }

@@ -1,9 +1,12 @@
 package br.com.zup.edu.nossalojavirtual.products;
 
 import br.com.zup.edu.nossalojavirtual.categories.CategoryRepository;
-import br.com.zup.edu.nossalojavirtual.shared.validators.ObjectIsRegisteredValidator;
+import br.com.zup.edu.nossalojavirtual.exception.UserNotValidException;
+import br.com.zup.edu.nossalojavirtual.products.shared.validators.ObjectIsRegisteredValidator;
 import br.com.zup.edu.nossalojavirtual.users.User;
 import br.com.zup.edu.nossalojavirtual.users.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,6 +28,8 @@ class ProductController {
     private final PhotoUploader photoUploader;
     private final UserRepository userRepository;
 
+    private Logger logger = LoggerFactory.getLogger(ProductController.class);
+
     public ProductController(ProductRepository productRepository,
                              CategoryRepository categoryRepository,
                              PhotoUploader photoUploader, UserRepository userRepository) {
@@ -39,10 +44,14 @@ class ProductController {
                              @AuthenticationPrincipal(expression = "claims['email']") String username
     ) {
 
-        User user = userRepository.findByEmail(username).orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "User not authenticated."));
+        User user = userRepository.findByEmail(username).orElseThrow(
+                () -> new UserNotValidException("User not authenticated.")
+        );
 
         Product product = newProduct.toProduct(photoUploader, categoryRepository::findCategoryById, user);
         productRepository.save(product);
+
+        logger.info("New product has been created! {}", product.toString());
 
         URI location = URI.create("/api/products/" + product.getId());
         return created(location).build();

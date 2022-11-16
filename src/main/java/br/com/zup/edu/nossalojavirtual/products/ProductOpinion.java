@@ -93,4 +93,16 @@ class ProductOpinion {
     public String getDescription() {
         return description;
     }
+
+    @Override
+    public String toString() {
+        return "ProductOpinion{" +
+                "id=" + id +
+                ", rating=" + rating +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", product=" + product +
+                ", user=" + user +
+                '}';
+    }
 }

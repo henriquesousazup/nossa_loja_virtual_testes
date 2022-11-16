@@ -133,4 +133,18 @@ class Purchase {
 
         return successPayment.getReturnedAt();
     }
+
+    @Override
+    public String toString() {
+        return "Purchase{" +
+                "id=" + id +
+                ", buyer=" + buyer +
+                ", product=" + product +
+                ", quantity=" + quantity +
+                ", paymentGateway=" + paymentGateway +
+                ", status=" + status +
+                ", total=" + total +
+                ", paymentAttempts=" + paymentAttempts +
+                '}';
+    }
 }

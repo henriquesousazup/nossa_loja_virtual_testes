@@ -1,8 +1,10 @@
 package br.com.zup.edu.nossalojavirtual.products;
 
-import br.com.zup.edu.nossalojavirtual.shared.email.Email;
-import br.com.zup.edu.nossalojavirtual.shared.email.EmailRepository;
-import br.com.zup.edu.nossalojavirtual.shared.email.EmailService;
+import br.com.zup.edu.nossalojavirtual.products.shared.email.Email;
+import br.com.zup.edu.nossalojavirtual.products.shared.email.EmailRepository;
+import br.com.zup.edu.nossalojavirtual.products.shared.email.EmailService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +13,8 @@ class SendQuestionToSellersEmailListener {
 
     private final EmailService sendEmail;
     private final EmailRepository emailRepository;
+
+    private Logger logger = LoggerFactory.getLogger(SendQuestionToSellersEmailListener.class);
 
     SendQuestionToSellersEmailListener(EmailService sendEmail,
                                        EmailRepository emailRepository) {
@@ -34,5 +38,7 @@ class SendQuestionToSellersEmailListener {
 
         sendEmail.send(email);
         emailRepository.save(email);
+
+        logger.info("New e-mail has been sent! {}", email);
     }
 }

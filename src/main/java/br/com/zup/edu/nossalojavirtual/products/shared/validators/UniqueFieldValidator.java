@@ -1,4 +1,4 @@
-package br.com.zup.edu.nossalojavirtual.shared.validators;
+package br.com.zup.edu.nossalojavirtual.products.shared.validators;
 
 import org.springframework.lang.Nullable;
 import org.springframework.validation.Errors;
@@ -14,11 +14,11 @@ import static java.util.Objects.requireNonNull;
 import static org.springframework.util.Assert.hasText;
 
 /**
+ *
  * @param <T> class which will be validated
  * @param <P> parameter type which will be validated
  */
-// TODO: This class is very similar to #UniqueFielValidator maybe there's a way to generalize
-public class ObjectIsRegisteredValidator<T, P> implements Validator {
+public class UniqueFieldValidator<T, P> implements Validator {
 
     private final String field;
     private final String errorCode;
@@ -26,17 +26,19 @@ public class ObjectIsRegisteredValidator<T, P> implements Validator {
     private final Function<P, Boolean> existsFunction;
 
     /**
-     * @param field           the class field which will be validated
-     * @param errorCode       the error code that the client will receive, if there's any error
+     *
+     * @param field the class field which will be validated
+     * @param errorCode the error code that the client will receive, if there's any error
      * @param classToValidate the class type which will be validated
-     * @param existsFunction  a function that receives the argument #P and returns a boolean
+     * @param existsFunction a function that receives the argument #P and returns a boolean
+     *
      * @throws IllegalArgumentException if field has no text
-     * @throws NullPointerException     if classToValidate or existsFunction is null
+     * @throws NullPointerException if classToValidate or existsFunction is null
      */
-    public ObjectIsRegisteredValidator(@NotEmpty String field,
-                                       @Nullable String errorCode,
-                                       @NotNull Class<? extends T> classToValidate,
-                                       @NotNull Function<P, Boolean> existsFunction) {
+    public UniqueFieldValidator(@NotEmpty String field,
+                                @Nullable String errorCode,
+                                @NotNull Class<? extends T> classToValidate,
+                                @NotNull Function<P, Boolean> existsFunction) {
 
         hasText(field, "field cannot be null");
         requireNonNull(classToValidate, "classToValidate cannot be null");
@@ -46,7 +48,6 @@ public class ObjectIsRegisteredValidator<T, P> implements Validator {
         this.errorCode = errorCode;
         this.classToValidate = classToValidate;
         this.existsFunction = existsFunction;
-
     }
 
     @Override
@@ -54,6 +55,13 @@ public class ObjectIsRegisteredValidator<T, P> implements Validator {
         return classToValidate.isAssignableFrom(clazz);
     }
 
+    /**
+     *
+     * @param target the object which will be validated
+     * @param errors the stored errors
+     *
+     * @throws IllegalArgumentException if field does not exists or it is inaccessible
+     */
     @SuppressWarnings("unchecked")
     @Override
     public void validate(Object target, Errors errors) {
@@ -62,13 +70,9 @@ public class ObjectIsRegisteredValidator<T, P> implements Validator {
             fieldToValidate.setAccessible(true);
             Object fieldValue = fieldToValidate.get(target);
 
-            if (fieldValue == null) {
-                return;
-            }
-
             Boolean hasObject = existsFunction.apply((P) fieldValue);
-            if (!hasObject) {
-                errors.rejectValue(field, errorCode, format("Category %s is not registered", field));
+            if (hasObject) {
+                errors.rejectValue(field, errorCode, format("%s is already registered", field));
             }
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new IllegalArgumentException(e);

@@ -2,6 +2,7 @@ package br.com.zup.edu.nossalojavirtual.products;
 
 import br.com.zup.edu.nossalojavirtual.categories.Category;
 import br.com.zup.edu.nossalojavirtual.categories.CategoryRepository;
+import br.com.zup.edu.nossalojavirtual.exception.UserNotValidException;
 import br.com.zup.edu.nossalojavirtual.users.Password;
 import br.com.zup.edu.nossalojavirtual.users.User;
 import br.com.zup.edu.nossalojavirtual.users.UserRepository;
@@ -248,13 +249,9 @@ class ProductControllerTest {
                 .content(payload)
                 .contentType(MediaType.APPLICATION_JSON);
 
-        Exception resolvedException = mockMvc.perform(request)
-                .andExpect(MockMvcResultMatchers.status().isForbidden())
-                .andReturn()
-                .getResolvedException();
+        mockMvc.perform(request)
+                .andExpect(MockMvcResultMatchers.status().isForbidden());
 
-        ResponseStatusException exception = (ResponseStatusException) resolvedException;
-        assertEquals("User not authenticated.", exception.getReason());
     }
 
     @Test
@@ -300,7 +297,7 @@ class ProductControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isForbidden());
     }
 
-    private void clearDB(){
+    private void clearDB() {
         productRepository.deleteAll();
         categoryRepository.deleteAll();
         userRepository.deleteAll();

@@ -1,4 +1,4 @@
-package br.com.zup.edu.nossalojavirtual.shared.email;
+package br.com.zup.edu.nossalojavirtual.products.shared.email;
 
 
 import br.com.zup.edu.nossalojavirtual.products.Product;
@@ -91,6 +91,19 @@ public class Email {
 
     public String getBody() {
         return body;
+    }
+
+    @Override
+    public String toString() {
+        return "Email{" +
+                "id=" + id +
+                ", to='" + to + '\'' +
+                ", from='" + from + '\'' +
+                ", subject='" + subject + '\'' +
+                ", body='" + body + '\'' +
+                ", product=" + product +
+                ", sentAt=" + sentAt +
+                '}';
     }
 
     /**

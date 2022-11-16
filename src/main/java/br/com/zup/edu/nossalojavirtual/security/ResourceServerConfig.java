@@ -36,6 +36,8 @@ public class ResourceServerConfig extends WebSecurityConfigurerAdapter {
                         .antMatchers(HttpMethod.POST, "/invoice/register").permitAll()
                         .antMatchers(HttpMethod.POST, "/sellerRanking/newPurchase").permitAll()
                         .antMatchers(HttpMethod.POST, "/api/users").permitAll()
+                        .antMatchers(HttpMethod.GET, "/actuator").permitAll()
+                        .antMatchers(HttpMethod.GET, "/actuator/**").permitAll()
                     .anyRequest()
                         .authenticated()
                 .and()

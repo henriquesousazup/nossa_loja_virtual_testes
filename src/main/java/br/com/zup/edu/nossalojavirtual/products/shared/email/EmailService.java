@@ -1,4 +1,4 @@
-package br.com.zup.edu.nossalojavirtual.shared.email;
+package br.com.zup.edu.nossalojavirtual.products.shared.email;
 
 public interface EmailService {
 

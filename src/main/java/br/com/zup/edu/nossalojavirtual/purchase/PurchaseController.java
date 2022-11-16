@@ -1,9 +1,12 @@
 package br.com.zup.edu.nossalojavirtual.purchase;
 
+import br.com.zup.edu.nossalojavirtual.exception.UserNotValidException;
 import br.com.zup.edu.nossalojavirtual.products.ProductRepository;
-import br.com.zup.edu.nossalojavirtual.shared.validators.ObjectIsRegisteredValidator;
+import br.com.zup.edu.nossalojavirtual.products.shared.validators.ObjectIsRegisteredValidator;
 import br.com.zup.edu.nossalojavirtual.users.User;
 import br.com.zup.edu.nossalojavirtual.users.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -28,6 +31,8 @@ class PurchaseController {
     private final PurchaseRepository purchaseRepository;
     private final UserRepository userRepository;
 
+    private Logger logger = LoggerFactory.getLogger(PurchaseController.class);
+
     PurchaseController(ProductRepository productRepository,
                        PurchaseRepository purchaseRepository, UserRepository userRepository) {
         this.productRepository = productRepository;
@@ -41,7 +46,9 @@ class PurchaseController {
                                  @AuthenticationPrincipal(expression = "claims['email']") String username,
                                  UriComponentsBuilder uriBuilder) throws BindException {
 
-        User buyer = userRepository.findByEmail(username).orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "User not authenticated."));
+        User buyer = userRepository.findByEmail(username).orElseThrow(
+                () -> new UserNotValidException("User not authenticated.")
+        );
 
         var product = productRepository.findById(newPurchase.getProductId()).get();
 
@@ -51,11 +58,15 @@ class PurchaseController {
             BindException bindException = new BindException(new Object(), "");
             bindException.reject("purchase.product.outOfStock", "This product is out of stock");
 
+            logger.warn("This product is out of stock {}", product);
+
             throw bindException;
         }
 
         Purchase purchase = possiblePurchase.get();
         purchaseRepository.save(purchase);
+
+        logger.info("New purchase has been created! {}", purchase);
 
         var redirectUrl = uriBuilder.path("/api/purchases/confirm-payment")
                 .buildAndExpand(purchase.getId())

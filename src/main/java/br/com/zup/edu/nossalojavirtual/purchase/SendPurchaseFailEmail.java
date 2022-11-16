@@ -1,7 +1,9 @@
 package br.com.zup.edu.nossalojavirtual.purchase;
 
-import br.com.zup.edu.nossalojavirtual.shared.email.Email;
-import br.com.zup.edu.nossalojavirtual.shared.email.EmailService;
+import br.com.zup.edu.nossalojavirtual.products.shared.email.Email;
+import br.com.zup.edu.nossalojavirtual.products.shared.email.EmailService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -11,6 +13,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 class SendPurchaseFailEmail implements PostPurchaseAction {
 
     private final EmailService emailService;
+
+    private Logger logger = LoggerFactory.getLogger(SendPurchaseFailEmail.class);
 
     SendPurchaseFailEmail(EmailService emailService) {
         this.emailService = emailService;
@@ -41,5 +45,7 @@ class SendPurchaseFailEmail implements PostPurchaseAction {
                 .build();
 
         emailService.send(email);
+
+        logger.warn("Purchase fail has been sent to email! {}", email);
     }
 }

@@ -1,7 +1,10 @@
 package br.com.zup.edu.nossalojavirtual.products;
 
+import br.com.zup.edu.nossalojavirtual.exception.UserNotValidException;
 import br.com.zup.edu.nossalojavirtual.users.User;
 import br.com.zup.edu.nossalojavirtual.users.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +31,8 @@ class QuestionController {
     private final UserRepository userRepository;
     private final ApplicationEventPublisher publisher;
 
+    private Logger logger = LoggerFactory.getLogger(QuestionController.class);
+
     QuestionController(ProductRepository productRepository,
                        QuestionRepository questionRepository,
                        ApplicationEventPublisher publisher, UserRepository userRepository) {
@@ -43,17 +48,22 @@ class QuestionController {
                                   @AuthenticationPrincipal(expression = "claims['email']") String username,
                                   UriComponentsBuilder uriBuilder) {
 
-        User user = userRepository.findByEmail(username).orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "User not authenticated."));
+        User user = userRepository.findByEmail(username).orElseThrow(
+                    () -> new UserNotValidException("User not authenticated.")
+        );
 
         Optional<Product> possibleProduct = productRepository.findById(id);
 
         if (possibleProduct.isEmpty()) {
+            logger.info("Product not found - id {}", id);
             return notFound().build();
         }
 
         Product product = possibleProduct.get();
         var question = newQuestion.toQuestion(user, product);
         questionRepository.save(question);
+
+        logger.info("New question has been created! {}", question.toString());
 
         publisher.publishEvent(new QuestionEvent(question, uriBuilder));
 

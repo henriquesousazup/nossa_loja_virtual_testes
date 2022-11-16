@@ -2,7 +2,7 @@ package br.com.zup.edu.nossalojavirtual.products;
 
 import br.com.zup.edu.nossalojavirtual.categories.Category;
 import br.com.zup.edu.nossalojavirtual.categories.CategoryRepository;
-import br.com.zup.edu.nossalojavirtual.shared.email.EmailRepository;
+import br.com.zup.edu.nossalojavirtual.products.shared.email.EmailRepository;
 import br.com.zup.edu.nossalojavirtual.users.Password;
 import br.com.zup.edu.nossalojavirtual.users.User;
 import br.com.zup.edu.nossalojavirtual.users.UserRepository;
@@ -27,7 +27,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
-import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;

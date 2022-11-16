@@ -34,6 +34,14 @@ interface InvoiceClient {
         public String getBuyerId() {
             return buyerId;
         }
+
+        @Override
+        public String toString() {
+            return "InvoiceRequest{" +
+                    "purchaseId=" + purchaseId +
+                    ", buyerId='" + buyerId + '\'' +
+                    '}';
+        }
     }
 }
 

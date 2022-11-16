@@ -80,4 +80,15 @@ public class Question {
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
+
+    @Override
+    public String toString() {
+        return "Question{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", user=" + user +
+                ", product=" + product +
+                ", createdAt=" + createdAt +
+                '}';
+    }
 }

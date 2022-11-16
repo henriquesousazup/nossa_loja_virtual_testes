@@ -2,7 +2,7 @@ package br.com.zup.edu.nossalojavirtual.purchase;
 
 import br.com.zup.edu.nossalojavirtual.categories.Category;
 import br.com.zup.edu.nossalojavirtual.products.*;
-import br.com.zup.edu.nossalojavirtual.shared.email.EmailService;
+import br.com.zup.edu.nossalojavirtual.products.shared.email.EmailService;
 import br.com.zup.edu.nossalojavirtual.users.Password;
 import br.com.zup.edu.nossalojavirtual.users.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +16,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
