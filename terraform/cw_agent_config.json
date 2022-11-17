@@ -1,0 +1,32 @@
+{
+  "metrics": {
+    "metrics_collected": {
+      "cpu": {
+        "resources": [
+          "*"
+        ],
+        "measurement": [
+          "usage_active"
+        ],
+        "totalcpu": true
+      },
+      "mem": {
+         "measurement": [
+           "used_percent"
+        ]
+      }
+    }
+  },
+  "logs": {
+    "logs_collected": {
+      "files": {
+        "collect_list": [
+          {
+            "file_path": "/opt/lojavirtual/logs/spring-boot-logger.log",
+            "log_group_name": "lojavirtualhenrique"
+          }
+        ]
+      }
+    }
+  }
+}

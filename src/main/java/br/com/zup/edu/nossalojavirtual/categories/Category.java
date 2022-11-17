@@ -1,8 +1,11 @@
 package br.com.zup.edu.nossalojavirtual.categories;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -29,6 +32,9 @@ public class Category {
     @ManyToOne
     @JoinColumn(name = "super_category_id")
     private Category superCategory;
+
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 
     /**
      * @deprecated frameworks eyes only

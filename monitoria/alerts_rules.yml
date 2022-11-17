@@ -1,5 +1,5 @@
 groups:
-  - name: livraria
+  - name: lojavirtual
     rules:
       - alert: altaTaxaDeErrosNasRequisicoes
         expr: rate(http_server_requests_seconds_count{status="500"}[1m]) >= 0.2
@@ -7,7 +7,7 @@ groups:
         labels:
           app: livraria
           severity: critical
-          group: backend-livraria
+          group: backend-lojavirtual
           env: production
         annotations:
           title: Taxa de Erro alta

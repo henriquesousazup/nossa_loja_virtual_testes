@@ -13,7 +13,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>nossa-loja-virtual</name>
 
-    <packaging>pom</packaging>
+
 
     <dependencyManagement>
         <dependencies>
@@ -100,7 +100,6 @@
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
         </dependency>
-
 
     </dependencies>
 
