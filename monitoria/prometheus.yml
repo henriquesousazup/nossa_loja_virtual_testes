@@ -15,7 +15,7 @@ scrape_configs:
   - job_name: 'lojavirtual'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: ['172.25.208.1:8080']
+      - targets: ['app:8080']
 
 
 

@@ -10,6 +10,6 @@ groups:
           group: backend-lojavirtual
           env: production
         annotations:
-          title: Taxa de Erro alta
+          title: Alta taxa de erros não esperados
           summary: A taxa de erro das requisições http estão com valores além do normal.
           description: Mais de 50% das requisições http estão com erro.

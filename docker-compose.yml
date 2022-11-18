@@ -1,6 +1,18 @@
 version: '3'
 
 services:
+  app:
+    build: ..
+    ports:
+      - "8080:8080"
+    hostname: bancodigital
+    container_name: bancodigital
+    volumes:
+      - ../logs:/logs
+    networks:
+      - lojavirtual
+    depends_on:
+      - db
   keycloak:
     image: quay.io/keycloak/keycloak:latest
     environment:
@@ -9,7 +21,7 @@ services:
       KEYCLOAK_ADMIN_PASSWORD: admin
     ports:
       - 18080:8080
-    entrypoint: ["/opt/keycloak/bin/kc.sh", "start-dev"]
+    entrypoint: [ "/opt/keycloak/bin/kc.sh", "start-dev" ]
   db:
     image: postgres
     restart: always
