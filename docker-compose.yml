@@ -5,8 +5,8 @@ services:
     build: .
     ports:
       - "8080:8080"
-    hostname: bancodigital
-    container_name: bancodigital
+    hostname: lojavirtual
+    container_name: lojavirtual
     volumes:
       - ../logs:/logs
     networks:
@@ -20,7 +20,7 @@ services:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
     ports:
-      - 18080:8080
+      - "18080:8080"
     entrypoint: [ "/opt/keycloak/bin/kc.sh", "start-dev" ]
   db:
     image: postgres
